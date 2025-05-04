@@ -1,0 +1,6 @@
+@moveo_HostAddress = http://localhost:5018
+
+GET {{moveo_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
