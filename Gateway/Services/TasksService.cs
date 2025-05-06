@@ -6,17 +6,17 @@ namespace Services
 {
     public class TasksService : ITasksService
     {
-        private readonly IRequestClient<CreateTaskRequest> _createTaskRequestClient;
+        private readonly IRequestClient<CreateTaskRequestDto> _createTaskRequestClient;
         private readonly IRequestClient<GetTaskRequest> _getTaskRequestClient;
         private readonly IRequestClient<GetAllTasksRequest> _getAllTasksRequestClient;
-        private readonly IRequestClient<UpdateTaskRequest> _updateTaskRequestClient;
+        private readonly IRequestClient<UpdateTaskRequestDto> _updateTaskRequestClient;
         private readonly IPublishEndpoint _publishEndpoint;
 
         public TasksService(
-            IRequestClient<CreateTaskRequest> createTaskRequestClient,
+            IRequestClient<CreateTaskRequestDto> createTaskRequestClient,
             IRequestClient<GetTaskRequest> getTaskRequestClient,
             IRequestClient<GetAllTasksRequest> getAllTasksRequestClient,
-            IRequestClient<UpdateTaskRequest> updateTaskRequestClient,
+            IRequestClient<UpdateTaskRequestDto> updateTaskRequestClient,
             IPublishEndpoint publishEndpoint)
         {
             _createTaskRequestClient = createTaskRequestClient;
@@ -51,7 +51,7 @@ namespace Services
             return result.Message;
         }
 
-        public async Task<TaskDto> Create(moveo.Requests.CreateTaskRequest request, string userName)
+        public async Task<TaskDto> Create(CreateTaskRequestDto request, string userName)
         {
             var createTaskRequest = new CreateTaskRequest
             {
@@ -65,7 +65,7 @@ namespace Services
             return result.Message;
         }
 
-        public async Task<TaskDto> Update(Guid projectId, Guid taskId, moveo.Requests.UpdateTaskRequest request, string userName)
+        public async Task<TaskDto> Update(Guid projectId, Guid taskId, UpdateTaskRequestDto request, string userName)
         {
             var updateTaskRequest = new UpdateTaskRequest
             {

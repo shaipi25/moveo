@@ -1,4 +1,5 @@
 ﻿using Dto;
+using Requests;
 
 namespace Services
 {
@@ -8,9 +9,9 @@ namespace Services
 
         public Task<List<TaskDto>> GetAll(Guid projectId, int? pageNumber, int? pageSize, string userName);
 
-        public Task<TaskDto> Create(moveo.Requests.CreateTaskRequest request, string userName);
+        public Task<TaskDto> Create(CreateTaskRequestDto request, string userName);
 
-        public Task<TaskDto> Update(Guid projectId, Guid taskId, moveo.Requests.UpdateTaskRequest request, string userName);
+        public Task<TaskDto> Update(Guid projectId, Guid taskId, UpdateTaskRequestDto request, string userName);
 
         public void Delete(Guid projectId, Guid taskId, string userName);
     }

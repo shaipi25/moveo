@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Requests;
 using Services;
 
 namespace moveo.Controllers;
@@ -31,14 +32,14 @@ public class ProjectsController : ControllerBase
     }
 
     [HttpPost("CreateProject")]
-    public async Task<ActionResult> Create([FromBody] Requests.CreateProjectRequest request)
+    public async Task<ActionResult> Create([FromBody] CreateProjectRequestDto request)
     {
         var result = await _projectsService.CreateAsync(request, GetUserName());
         return Ok(result);
     }
 
     [HttpPut("UpdateProject")]
-    public async Task<ActionResult> Update([FromRoute] Guid projectId, [FromBody] Requests.UpdateProjectRequest request)
+    public async Task<ActionResult> Update([FromRoute] Guid projectId, [FromBody] UpdateProjectRequestDto request)
     {
         var result = await _projectsService.UpdateAsync(projectId, request, GetUserName());
         return Ok(result);

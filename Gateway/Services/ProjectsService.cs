@@ -6,17 +6,17 @@ namespace Services
 {
     public class ProjectsService : IProjectsService
     {
-        private readonly IRequestClient<CreateProjectRequest> _createProjectRequestClient;
+        private readonly IRequestClient<CreateProjectRequestDto> _createProjectRequestClient;
         private readonly IRequestClient<GetProjectRequest> _getProjectRequestClient;
         private readonly IRequestClient<GetAllProjectsRequest> _getAllProjectsRequestClient;
-        private readonly IRequestClient<UpdateProjectRequest> _updateProjectRequestClient;
+        private readonly IRequestClient<UpdateProjectRequestDto> _updateProjectRequestClient;
         private readonly IPublishEndpoint _publishEndpoint;
 
         public ProjectsService(
-            IRequestClient<CreateProjectRequest> createProjectRequestClient,
+            IRequestClient<CreateProjectRequestDto> createProjectRequestClient,
             IRequestClient<GetProjectRequest> getProjectRequestClient,
             IRequestClient<GetAllProjectsRequest> getAllProjectsRequestClient,
-            IRequestClient<UpdateProjectRequest> updateProjectRequestClient,
+            IRequestClient<UpdateProjectRequestDto> updateProjectRequestClient,
             IPublishEndpoint publishEndpoint)
         {
             _createProjectRequestClient = createProjectRequestClient;
@@ -49,7 +49,7 @@ namespace Services
             return result.Message;
         }
 
-        public async Task<ProjectDto> CreateAsync(moveo.Requests.CreateProjectRequest request, string userName)
+        public async Task<ProjectDto> CreateAsync(CreateProjectRequestDto request, string userName)
         {
             var createProjectRequest = new CreateProjectRequest
             {
@@ -61,7 +61,7 @@ namespace Services
             return result.Message;
         }
 
-        public async Task<ProjectDto> UpdateAsync(Guid projectId, moveo.Requests.UpdateProjectRequest request, string userName)
+        public async Task<ProjectDto> UpdateAsync(Guid projectId, UpdateProjectRequestDto request, string userName)
         {
             var updateProjectRequest = new UpdateProjectRequest
             {

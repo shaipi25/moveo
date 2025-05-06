@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Requests;
 using Services;
 
 namespace moveo.Controllers
@@ -29,14 +30,14 @@ namespace moveo.Controllers
         }
 
         [HttpPost("CreateTask")]
-        public ActionResult Create([FromBody] Requests.CreateTaskRequest request)
+        public ActionResult Create([FromBody] CreateTaskRequestDto request)
         {
             var task = _tasksService.Create(request, GetUserName());
             return Ok(task);
         }
 
         [HttpPut("UpdateTask")]
-        public ActionResult Update([FromRoute] Guid projectId, [FromRoute] Guid taskId, [FromBody] Requests.UpdateTaskRequest request)
+        public ActionResult Update([FromRoute] Guid projectId, [FromRoute] Guid taskId, [FromBody] UpdateTaskRequestDto request)
         {
             var task = _tasksService.Update(projectId, taskId, request, GetUserName());
             return Ok(task);

@@ -1,6 +1,5 @@
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.IdentityModel.Tokens;
 using moveo.Excpetions;
 using Requests;
@@ -27,15 +26,15 @@ internal class Program
        
         builder.Services.AddMassTransit(x =>
         {
-            x.AddRequestClient<CreateProjectRequest>();
-            x.AddRequestClient<UpdateProjectRequest>();
+            x.AddRequestClient<CreateProjectRequestDto>();
+            x.AddRequestClient<UpdateProjectRequestDto>();
             x.AddRequestClient<DeleteProjectRequest>();
             x.AddRequestClient<GetProjectRequest>();
             x.AddRequestClient<GetAllProjectsRequest>();
 
-            x.AddRequestClient<CreateTaskRequest>();
-            x.AddRequestClient<UpdateTaskRequest>();
-            x.AddRequestClient<DeleteTaskRequest>();
+            x.AddRequestClient<CreateTaskRequestDto>();
+            x.AddRequestClient<UpdateTaskRequestDto>();
+            x.AddRequestClient<DeleteTaskRequestDto>();
             x.AddRequestClient<GetTaskRequest>();
             x.AddRequestClient<GetAllTasksRequest>();
 
