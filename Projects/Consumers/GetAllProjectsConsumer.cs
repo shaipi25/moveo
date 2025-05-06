@@ -4,11 +4,11 @@ using Requests;
 
 namespace Consumers
 {
-    public class GetAllProjectConsumer : IConsumer<GetAllProjectsRequest>
+    public class GetAllProjectsConsumer : IConsumer<GetAllProjectsRequest>
     {
         private readonly IProjectsRepository _repository;
 
-        public GetAllProjectConsumer(IProjectsRepository repository)
+        public GetAllProjectsConsumer(IProjectsRepository repository)
         {
             _repository = repository;
         }

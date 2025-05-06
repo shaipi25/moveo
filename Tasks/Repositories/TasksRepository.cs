@@ -1,4 +1,5 @@
 ﻿using Dto;
+using Excpetions;
 using Requests;
 
 namespace Repositories
@@ -35,8 +36,7 @@ namespace Repositories
             var task = _context.Tasks.FirstOrDefault(t => t.ProjectId == request.ProjectId &&
             t.Id == request.Id && t.UserName == request.UserName);
 
-            if (task == null)
-                throw new KeyNotFoundException($"Task '{request.Id}' not found in project '{request.ProjectId}'");
+            if (task == null) throw new NotFoundException($"Task '{request.Id}' not found in project '{request.ProjectId}'");
 
             return task;
         }
@@ -63,8 +63,8 @@ namespace Repositories
         {
             var task = _context.Tasks.FirstOrDefault(t => t.ProjectId == request.ProjectId &&
             t.Id == request.Id && t.UserName == request.UserName);
-            if (task == null)
-                throw new KeyNotFoundException($"Task '{request.Id}' not found in project '{request.ProjectId}'");
+            
+            if (task == null) throw new NotFoundException($"Task '{request.Id}' not found in project '{request.ProjectId}'");
 
             task.Description = string.IsNullOrEmpty(request.Description) ? task.Description : request.Description;
             task.Status = request.Status;
@@ -79,12 +79,16 @@ namespace Repositories
         {
             var task = _context.Tasks.FirstOrDefault(t => t.ProjectId == request.ProjectId &&
             t.Id == request.Id && t.UserName == request.UserName);
-            if (task == null)
-                throw new KeyNotFoundException($"Task '{request.Id}' not found in project '{request.ProjectId}'");
+
+            if (task == null) return;
 
             _context.Tasks.Remove(task);
             _context.SaveChanges();
         }
 
+        public bool DoesTaskExists(Guid projectId, string taskName, string userName)
+        {
+            return _context.Tasks.Any(t => t.ProjectId == projectId && t.Name == taskName && t.UserName == userName);
+        }
     }
 }

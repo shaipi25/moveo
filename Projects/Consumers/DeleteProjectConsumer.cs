@@ -1,4 +1,5 @@
-﻿using MassTransit;
+﻿using Excpetions;
+using MassTransit;
 using Repositories;
 using Requests;
 

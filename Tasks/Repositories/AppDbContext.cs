@@ -9,6 +9,8 @@ namespace Repositories
 
         public DbSet<TaskDto> Tasks { get; set; }
 
+        public DbSet<ProjectDto> Projects { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<TaskDto>()

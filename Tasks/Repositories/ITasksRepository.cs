@@ -14,5 +14,7 @@ namespace Repositories
         public TaskDto Update(UpdateTaskRequest request);
 
         public void Delete(DeleteTaskRequest request);
+
+        public bool DoesTaskExists(Guid projectId, string taskName, string userName);
     }
 }

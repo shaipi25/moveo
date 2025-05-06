@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Gateway.Model.Queries;
+using Microsoft.AspNetCore.Mvc;
 using Requests;
 using Services;
 
@@ -23,9 +24,9 @@ namespace moveo.Controllers
         }
         
         [HttpGet("GetAllTask")]
-        public ActionResult GetAll([FromRoute] Guid projectId, [FromQuery] int? pageNumber, [FromQuery] int? pageSize)
+        public ActionResult GetAll([FromRoute] Guid projectId, [FromQuery] GetAllTasksQuery query)
         {
-            var task = _tasksService.GetAll(projectId, pageNumber, pageSize, GetUserName());
+            var task = _tasksService.GetAll(projectId, query, GetUserName());
             return Ok(task);
         }
 

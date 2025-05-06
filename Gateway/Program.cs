@@ -1,9 +1,12 @@
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using moveo.Excpetions;
+using Middelwares;
 using Requests;
 using Services;
+using Validators;
 
 internal class Program
 {
@@ -19,6 +22,15 @@ internal class Program
         builder.Services.AddTransient<IProjectsService, ProjectsService>();
         builder.Services.AddTransient<ITasksService, TasksService>();
 
+        builder.Services.AddFluentValidationAutoValidation();
+        builder.Services.AddValidatorsFromAssemblyContaining<CreateProjectRequestValidator>();
+        builder.Services.AddValidatorsFromAssemblyContaining<GetAllProjectsQueryValidator>();
+        builder.Services.AddValidatorsFromAssemblyContaining<UpdateProjectRequestValidator>();
+        
+        builder.Services.AddValidatorsFromAssemblyContaining<CreateTaskRequestValidator>();
+        builder.Services.AddValidatorsFromAssemblyContaining<GetAllTasksQueryValidator>();
+        builder.Services.AddValidatorsFromAssemblyContaining<UpdateTaskRequestValidator>();
+
         var app = builder.Build();
 
          app.UseSwagger();
@@ -26,15 +38,15 @@ internal class Program
        
         builder.Services.AddMassTransit(x =>
         {
-            x.AddRequestClient<CreateProjectRequestDto>();
-            x.AddRequestClient<UpdateProjectRequestDto>();
+            x.AddRequestClient<CreateProjectRequest>();
+            x.AddRequestClient<UpdateProjectRequest>();
             x.AddRequestClient<DeleteProjectRequest>();
             x.AddRequestClient<GetProjectRequest>();
             x.AddRequestClient<GetAllProjectsRequest>();
 
-            x.AddRequestClient<CreateTaskRequestDto>();
-            x.AddRequestClient<UpdateTaskRequestDto>();
-            x.AddRequestClient<DeleteTaskRequestDto>();
+            x.AddRequestClient<CreateTaskRequest>();
+            x.AddRequestClient<UpdateTaskRequest>();
+            x.AddRequestClient<DeleteTaskRequest>();
             x.AddRequestClient<GetTaskRequest>();
             x.AddRequestClient<GetAllTasksRequest>();
 

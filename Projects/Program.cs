@@ -14,7 +14,7 @@ builder.Services.AddMassTransit(x =>
 {
     x.AddConsumer<CreateProjectConsumer>();
     x.AddConsumer<GetProjectConsumer>();
-    x.AddConsumer<GetAllProjectConsumer>();
+    x.AddConsumer<GetAllProjectsConsumer>();
     x.AddConsumer<UpdateProjectConsumer>();
     x.AddConsumer<DeleteProjectConsumer>();
 

@@ -1,4 +1,5 @@
 ﻿using Dto;
+using Gateway.Model.Queries;
 using Requests;
 
 namespace Services
@@ -7,7 +8,7 @@ namespace Services
     {
         public Task<TaskDto> Get(Guid projectId, Guid taskId, string userName);
 
-        public Task<List<TaskDto>> GetAll(Guid projectId, int? pageNumber, int? pageSize, string userName);
+        public Task<List<TaskDto>> GetAll(Guid projectId, GetAllTasksQuery query, string userName);
 
         public Task<TaskDto> Create(CreateTaskRequestDto request, string userName);
 

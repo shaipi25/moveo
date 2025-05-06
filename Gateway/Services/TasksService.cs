@@ -1,4 +1,5 @@
 ﻿using Dto;
+using Gateway.Model.Queries;
 using MassTransit;
 using Requests;
 
@@ -6,17 +7,17 @@ namespace Services
 {
     public class TasksService : ITasksService
     {
-        private readonly IRequestClient<CreateTaskRequestDto> _createTaskRequestClient;
+        private readonly IRequestClient<CreateTaskRequest> _createTaskRequestClient;
         private readonly IRequestClient<GetTaskRequest> _getTaskRequestClient;
         private readonly IRequestClient<GetAllTasksRequest> _getAllTasksRequestClient;
-        private readonly IRequestClient<UpdateTaskRequestDto> _updateTaskRequestClient;
+        private readonly IRequestClient<UpdateTaskRequest> _updateTaskRequestClient;
         private readonly IPublishEndpoint _publishEndpoint;
 
         public TasksService(
-            IRequestClient<CreateTaskRequestDto> createTaskRequestClient,
+            IRequestClient<CreateTaskRequest> createTaskRequestClient,
             IRequestClient<GetTaskRequest> getTaskRequestClient,
             IRequestClient<GetAllTasksRequest> getAllTasksRequestClient,
-            IRequestClient<UpdateTaskRequestDto> updateTaskRequestClient,
+            IRequestClient<UpdateTaskRequest> updateTaskRequestClient,
             IPublishEndpoint publishEndpoint)
         {
             _createTaskRequestClient = createTaskRequestClient;
@@ -38,14 +39,14 @@ namespace Services
             return result.Message;
         }
         
-        public async Task<List<TaskDto>> GetAll(Guid projectId, int? pageNumber, int? pageSize, string userName)
+        public async Task<List<TaskDto>> GetAll(Guid projectId, GetAllTasksQuery query, string userName)
         {
             var request = new GetAllTasksRequest
             {
                 ProjectId = projectId,
                 UserName = userName,
-                PageNumber = pageNumber,
-                PageSize = pageSize
+                PageNumber = query.PageNumber,
+                PageSize = query.PageSize
             };
             var result = await _getAllTasksRequestClient.GetResponse<List<TaskDto>>(request);
             return result.Message;

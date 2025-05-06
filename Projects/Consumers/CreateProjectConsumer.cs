@@ -1,4 +1,5 @@
-﻿using MassTransit;
+﻿using Excpetions;
+using MassTransit;
 using Repositories;
 using Requests;
 
@@ -16,6 +17,12 @@ namespace Consumers
         public Task Consume(ConsumeContext<CreateProjectRequest> context)
         {
             var request = context.Message;
+
+            if (_repository.DoesProjectExists(request.Name, request.UserName))
+            {
+                throw new ConflictException($"Project {request.Name} alread exists");
+            }
+            
             var response = _repository.Create(request);
             return context.RespondAsync(response);
         }

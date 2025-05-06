@@ -14,5 +14,7 @@ namespace Repositories
         public ProjectDto Update(UpdateProjectRequest request);
 
         public void Delete(DeleteProjectRequest request);
+
+        public bool DoesProjectExists(string projectName, string userName);
     }
 }

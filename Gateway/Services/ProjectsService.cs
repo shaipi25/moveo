@@ -1,4 +1,5 @@
 ﻿using Dto;
+using Gateway.Model.Queries;
 using MassTransit;
 using Requests;
 
@@ -37,12 +38,12 @@ namespace Services
             return result.Message;
         }
 
-        public async Task<List<ProjectDto>> GetAllAsync(int? pageNumber, int? pageSize, string userName)
+        public async Task<List<ProjectDto>> GetAllAsync(GetAllProjectsQuery query, string userName)
         {
             var request = new GetAllProjectsRequest
             {
-                PageNumber = pageNumber,
-                PageSize = pageSize,
+                PageNumber = query.PageNumber,
+                PageSize = query.PageSize,
                 UserName = userName
             };
             var result =  await _getAllProjectsRequestClient.GetResponse<List<ProjectDto>>(request);

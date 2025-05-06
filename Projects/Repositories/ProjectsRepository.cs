@@ -1,4 +1,5 @@
 ﻿using Dto;
+using Excpetions;
 using Requests;
 
 namespace Repositories
@@ -32,7 +33,7 @@ namespace Repositories
         {
             var project = _context.Projects.FirstOrDefault(p => p.Id == request.Id && p.UserName == request.UserName);
             if (project == null)
-                throw new KeyNotFoundException($"Project '{request.Id}' not found");
+                throw new NotFoundException($"Project '{request.Id}' not found");
 
             return project;
         }
@@ -60,7 +61,7 @@ namespace Repositories
             var project = _context.Projects.FirstOrDefault(p => p.Id == request.Id && p.UserName == request.UserName);
 
             if (project == null)
-                throw new KeyNotFoundException($"Project '{request.Id}' not found");
+                return;
 
             _context.Projects.Remove(project);
             _context.SaveChanges();
@@ -70,7 +71,7 @@ namespace Repositories
         {
             var project = _context.Projects.FirstOrDefault(p => p.Id == request.Id && p.UserName == request.UserName);
             if (project == null)
-                throw new KeyNotFoundException($"Project '{request.Id}' not found");
+                throw new NotFoundException($"Project '{request.Id}' not found");
 
             project.Name = string.IsNullOrEmpty(request.Name) ? project.Name : request.Name;
             project.Description = string.IsNullOrEmpty(request.Description) ? project.Description : request.Description; ;
@@ -79,5 +80,9 @@ namespace Repositories
             return project;
         }
 
+        public bool DoesProjectExists(string projectName, string userName)
+        {
+            return _context.Projects.Any(p => p.Name == projectName && p.UserName == userName);
+        }
     }
 }

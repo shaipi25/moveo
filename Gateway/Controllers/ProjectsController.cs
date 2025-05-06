@@ -1,3 +1,4 @@
+using Gateway.Model.Queries;
 using Microsoft.AspNetCore.Mvc;
 using Requests;
 using Services;
@@ -24,10 +25,10 @@ public class ProjectsController : ControllerBase
 
 
     [HttpGet("GetAllProject")]
-    public async Task<ActionResult> GetAll([FromQuery] int? pageNumber, [FromQuery] int? pageSize)
+    public async Task<ActionResult> GetAll([FromQuery] GetAllProjectsQuery getAllProjectsQuery)
     {
        
-        var result = await _projectsService.GetAllAsync(pageNumber, pageSize, GetUserName());
+        var result = await _projectsService.GetAllAsync(getAllProjectsQuery, GetUserName());
         return Ok(result);
     }
 

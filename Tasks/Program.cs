@@ -2,6 +2,7 @@ using Consumers;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Repositories;
+using Requests;
 
 var builder = Host.CreateApplicationBuilder(args);
 
@@ -20,6 +21,8 @@ builder.Services.AddMassTransit(x =>
 
     x.UsingRabbitMq((context, cfg) =>
     {
+        x.AddRequestClient<GetProjectRequest>();
+
         cfg.Host("localhost", "/", h =>
         {
             h.Username("guest");
