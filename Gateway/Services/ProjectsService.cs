@@ -7,17 +7,17 @@ namespace Services
 {
     public class ProjectsService : IProjectsService
     {
-        private readonly IRequestClient<CreateProjectRequestDto> _createProjectRequestClient;
+        private readonly IRequestClient<CreateProjectRequest> _createProjectRequestClient;
         private readonly IRequestClient<GetProjectRequest> _getProjectRequestClient;
         private readonly IRequestClient<GetAllProjectsRequest> _getAllProjectsRequestClient;
-        private readonly IRequestClient<UpdateProjectRequestDto> _updateProjectRequestClient;
+        private readonly IRequestClient<UpdateProjectRequest> _updateProjectRequestClient;
         private readonly IPublishEndpoint _publishEndpoint;
 
         public ProjectsService(
-            IRequestClient<CreateProjectRequestDto> createProjectRequestClient,
+            IRequestClient<CreateProjectRequest> createProjectRequestClient,
             IRequestClient<GetProjectRequest> getProjectRequestClient,
             IRequestClient<GetAllProjectsRequest> getAllProjectsRequestClient,
-            IRequestClient<UpdateProjectRequestDto> updateProjectRequestClient,
+            IRequestClient<UpdateProjectRequest> updateProjectRequestClient,
             IPublishEndpoint publishEndpoint)
         {
             _createProjectRequestClient = createProjectRequestClient;
