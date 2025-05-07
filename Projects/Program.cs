@@ -1,41 +1,50 @@
 using Consumers;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
+using Projects;
 using Repositories;
 
-var builder = Host.CreateApplicationBuilder(args);
-
-builder.Services.AddScoped<IProjectsRepository, ProjectsRepository>();
-
-builder.Services.AddDbContext<AppDbContext>(options =>
-        options.UseSqlServer(builder.Configuration.GetConnectionString("DBConnection")));
-
-builder.Services.AddMassTransit(x =>
+internal class Program
 {
-    x.AddConsumer<CreateProjectConsumer>();
-    x.AddConsumer<GetProjectConsumer>();
-    x.AddConsumer<GetAllProjectsConsumer>();
-    x.AddConsumer<UpdateProjectConsumer>();
-    x.AddConsumer<DeleteProjectConsumer>();
-
-    x.UsingRabbitMq((context, cfg) =>
+    private static void Main(string[] args)
     {
-        cfg.Host("localhost", "/", h =>
+        var builder = Host.CreateApplicationBuilder(args);
+
+        builder.Services.AddDbContext<AppDbContext>(options =>
+                options.UseNpgsql(builder.Configuration.GetConnectionString("DBConnection")));
+
+        var rabbitSettings = builder.Configuration.GetSection("RabbitMQ").Get<RabbitMQSettings>();
+
+        builder.Services.AddMassTransit(x =>
         {
-            h.Username("guest");
-            h.Password("guest");
+            x.AddConsumer<CreateProjectConsumer>();
+            x.AddConsumer<GetProjectConsumer>();
+            x.AddConsumer<GetAllProjectsConsumer>();
+            x.AddConsumer<UpdateProjectConsumer>();
+            x.AddConsumer<DeleteProjectConsumer>();
+
+            x.UsingRabbitMq((context, cfg) =>
+            {
+                cfg.Host(rabbitSettings.HostName, rabbitSettings.VirtualHost, h =>
+                {
+                    h.Username(rabbitSettings.UserName);
+                    h.Password(rabbitSettings.Password);
+                });
+
+                cfg.ConfigureEndpoints(context);
+            });
         });
 
-        cfg.ConfigureEndpoints(context);
-    });
-});
+        builder.Services.AddScoped<IProjectsRepository, ProjectsRepository>();
 
-var host = builder.Build();
+        var host = builder.Build();
 
-using (var scope = host.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.EnsureCreated();
+        using (var scope = host.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            db.Database.EnsureCreated();
+        }
+
+        host.Run();
+    }
 }
-
-host.Run();

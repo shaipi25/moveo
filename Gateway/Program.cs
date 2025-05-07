@@ -1,8 +1,10 @@
 using FluentValidation;
-using FluentValidation.AspNetCore;
+using Gateway;
+using Gateway.Model.Queries;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Middelwares;
 using Requests;
 using Services;
@@ -16,26 +18,52 @@ internal class Program
 
         builder.Services.AddControllers();
 
-        builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
-
         builder.Services.AddTransient<IProjectsService, ProjectsService>();
         builder.Services.AddTransient<ITasksService, TasksService>();
 
-        builder.Services.AddFluentValidationAutoValidation();
-        builder.Services.AddValidatorsFromAssemblyContaining<CreateProjectRequestValidator>();
-        builder.Services.AddValidatorsFromAssemblyContaining<GetAllProjectsQueryValidator>();
-        builder.Services.AddValidatorsFromAssemblyContaining<UpdateProjectRequestValidator>();
-        
-        builder.Services.AddValidatorsFromAssemblyContaining<CreateTaskRequestValidator>();
-        builder.Services.AddValidatorsFromAssemblyContaining<GetAllTasksQueryValidator>();
-        builder.Services.AddValidatorsFromAssemblyContaining<UpdateTaskRequestValidator>();
+        builder.Services.AddScoped<IValidator<CreateProjectRequestDto>, CreateProjectRequestValidator>();
+        builder.Services.AddScoped<IValidator<GetAllProjectsQuery>, GetAllProjectsQueryValidator>();
+        builder.Services.AddScoped<IValidator<UpdateProjectRequestDto>, UpdateProjectRequestValidator>();
 
-        var app = builder.Build();
+        builder.Services.AddScoped<IValidator<CreateTaskRequestDto>, CreateTaskRequestValidator>();
+        builder.Services.AddScoped<IValidator<GetAllTasksQuery>, GetAllTasksQueryValidator>();
+        builder.Services.AddScoped<IValidator<UpdateTaskRequestDto>, UpdateTaskRequestValidator>();
 
-         app.UseSwagger();
-         app.UseSwaggerUI();
-       
+        var rabbitSettings = builder.Configuration.GetSection("RabbitMQ").Get<RabbitMQSettings>();
+
+        builder.Services.AddEndpointsApiExplorer();
+
+        builder.Services.AddSwaggerGen(c =>
+        {
+            c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+
+            // Add JWT Bearer support
+            c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                Description = "Enter 'Bearer' [space] and then your valid token.\nExample: Bearer eyJhbGciOiJIUzI1...",
+                Name = "Authorization",
+                In = ParameterLocation.Header,
+                Type = SecuritySchemeType.Http,
+                Scheme = "bearer",
+                BearerFormat = "JWT"
+            });
+
+            c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+        });
+
         builder.Services.AddMassTransit(x =>
         {
             x.AddRequestClient<CreateProjectRequest>();
@@ -52,15 +80,13 @@ internal class Program
 
             x.UsingRabbitMq((context, cfg) =>
             {
-                cfg.Host("localhost", "/", h =>
+                cfg.Host(rabbitSettings.HostName, rabbitSettings.VirtualHost, h =>
                 {
-                    h.Username("guest");
-                    h.Password("guest");
+                    h.Username(rabbitSettings.UserName);
+                    h.Password(rabbitSettings.Password);
                 });
             });
         });
-
-        app.UseHttpsRedirection();
 
         builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
          .AddJwtBearer(options =>
@@ -72,6 +98,18 @@ internal class Program
                  RoleClaimType = "cognito:groups"
              };
          });
+
+        builder.Services.AddAuthorization(options =>
+        {
+        });
+
+        var app = builder.Build();
+
+        app.UseSwagger();
+        app.UseSwaggerUI();
+
+        app.UseHttpsRedirection();
+        app.UseRouting();
 
         app.UseAuthentication();
         app.UseAuthorization();

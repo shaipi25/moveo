@@ -1,6 +1,7 @@
 ﻿using MassTransit;
 using Repositories;
 using Requests;
+using Responses;
 
 namespace Consumers
 {
@@ -16,7 +17,12 @@ namespace Consumers
         public Task Consume(ConsumeContext<GetAllProjectsRequest> context)
         {
             var request = context.Message;
-            var response = _repository.GetAll(request);
+            var projects = _repository.GetAll(request);
+
+            var response = new GetAllProjectsResponse
+            {
+                Projects = projects,
+            };
             return context.RespondAsync(response);
         }
     }

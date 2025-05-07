@@ -1,7 +1,9 @@
 ﻿using Dto;
+using FluentValidation;
 using Gateway.Model.Queries;
 using MassTransit;
 using Requests;
+using Responses;
 
 namespace Services
 {
@@ -13,18 +15,29 @@ namespace Services
         private readonly IRequestClient<UpdateTaskRequest> _updateTaskRequestClient;
         private readonly IPublishEndpoint _publishEndpoint;
 
+        private readonly IValidator<CreateTaskRequestDto> _createTaskValidator;
+        private readonly IValidator<GetAllTasksQuery> _getAllTasksvalidator;
+        private readonly IValidator<UpdateTaskRequestDto> _updateTaskRequestValidator;
+
         public TasksService(
             IRequestClient<CreateTaskRequest> createTaskRequestClient,
             IRequestClient<GetTaskRequest> getTaskRequestClient,
             IRequestClient<GetAllTasksRequest> getAllTasksRequestClient,
             IRequestClient<UpdateTaskRequest> updateTaskRequestClient,
-            IPublishEndpoint publishEndpoint)
+            IPublishEndpoint publishEndpoint,
+            IValidator<CreateTaskRequestDto> createTaskValidator,
+            IValidator<GetAllTasksQuery> getAllTasksvalidator,
+            IValidator<UpdateTaskRequestDto> updateTaskRequestValidator)
         {
             _createTaskRequestClient = createTaskRequestClient;
             _getTaskRequestClient = getTaskRequestClient;
             _getAllTasksRequestClient = getAllTasksRequestClient;
             _updateTaskRequestClient = updateTaskRequestClient;
             _publishEndpoint = publishEndpoint;
+
+            _createTaskValidator = createTaskValidator;
+            _getAllTasksvalidator = getAllTasksvalidator;
+            _updateTaskRequestValidator = updateTaskRequestValidator;
         }
 
         public async Task<TaskDto> Get(Guid projectId, Guid taskId, string userName)
@@ -39,8 +52,10 @@ namespace Services
             return result.Message;
         }
         
-        public async Task<List<TaskDto>> GetAll(Guid projectId, GetAllTasksQuery query, string userName)
+        public async Task<GetAllTasksResponse> GetAll(Guid projectId, GetAllTasksQuery query, string userName)
         {
+            _getAllTasksvalidator.ValidateAndThrow(query);
+
             var request = new GetAllTasksRequest
             {
                 ProjectId = projectId,
@@ -48,12 +63,14 @@ namespace Services
                 PageNumber = query.PageNumber,
                 PageSize = query.PageSize
             };
-            var result = await _getAllTasksRequestClient.GetResponse<List<TaskDto>>(request);
+            var result = await _getAllTasksRequestClient.GetResponse<GetAllTasksResponse>(request);
             return result.Message;
         }
 
         public async Task<TaskDto> Create(CreateTaskRequestDto request, string userName)
         {
+            _createTaskValidator.ValidateAndThrow(request);
+
             var createTaskRequest = new CreateTaskRequest
             {
                 Name = request.Name,
@@ -68,6 +85,8 @@ namespace Services
 
         public async Task<TaskDto> Update(Guid projectId, Guid taskId, UpdateTaskRequestDto request, string userName)
         {
+            _updateTaskRequestValidator.ValidateAndThrow(request);
+
             var updateTaskRequest = new UpdateTaskRequest
             {
                 ProjectId = projectId,

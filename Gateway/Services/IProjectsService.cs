@@ -1,6 +1,7 @@
 ﻿using Dto;
 using Gateway.Model.Queries;
 using Requests;
+using Responses;
 
 namespace Services
 {
@@ -8,7 +9,7 @@ namespace Services
     {
         public Task<ProjectDto> GetAsync(Guid projectId, string userName);
 
-        public Task<List<ProjectDto>> GetAllAsync(GetAllProjectsQuery getAllProjectsQuery, string userName);
+        public Task<GetAllProjectsResponse> GetAllAsync(GetAllProjectsQuery getAllProjectsQuery, string userName);
 
         public Task<ProjectDto> CreateAsync(CreateProjectRequestDto request, string userName);
 

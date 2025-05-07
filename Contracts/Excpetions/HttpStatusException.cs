@@ -9,6 +9,10 @@
     {
     }
 
+    public class UnauthorizedException(string message) : HttpStatusCodeException(401, message)
+    {
+    }
+
     public class BadRequestException(string message) : HttpStatusCodeException(400, message)
     {
     }
@@ -16,4 +20,5 @@
     public class ConflictException(string message) : HttpStatusCodeException(409, message)
     {
     }
+
 }

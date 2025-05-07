@@ -32,6 +32,8 @@ namespace Repositories
         public ProjectDto Get(GetProjectRequest request)
         {
             var project = _context.Projects.FirstOrDefault(p => p.Id == request.Id && p.UserName == request.UserName);
+
+
             if (project == null)
                 throw new NotFoundException($"Project '{request.Id}' not found");
 

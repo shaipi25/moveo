@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Requests;
 using Services;
 
-namespace moveo.Controllers
+namespace Controllers
 {
     [ApiController]
     [Route("[controller]")]
@@ -16,45 +16,39 @@ namespace moveo.Controllers
             _tasksService = tasksService;
         }
 
-        [HttpGet("GetTask")]
+        [HttpGet("projects/{projectId}/tasks/{taskId}")]
         public ActionResult Get([FromRoute] Guid projectId, [FromRoute] Guid taskId)
         {
-            var task = _tasksService.Get(projectId, taskId, GetUserName());
+            var task = _tasksService.Get(projectId, taskId, this.GetUserName());
             return Ok(task);
         }
         
-        [HttpGet("GetAllTask")]
+        [HttpGet("projects/tasks/getAll")]
         public ActionResult GetAll([FromRoute] Guid projectId, [FromQuery] GetAllTasksQuery query)
         {
-            var task = _tasksService.GetAll(projectId, query, GetUserName());
+            var task = _tasksService.GetAll(projectId, query, this.GetUserName());
             return Ok(task);
         }
 
-        [HttpPost("CreateTask")]
+        [HttpPost("projects/tasks/create")]
         public ActionResult Create([FromBody] CreateTaskRequestDto request)
         {
-            var task = _tasksService.Create(request, GetUserName());
+            var task = _tasksService.Create(request, this.GetUserName());
             return Ok(task);
         }
 
-        [HttpPut("UpdateTask")]
+        [HttpPut("projects/{projectId}/tasks/{taskId}/update")]
         public ActionResult Update([FromRoute] Guid projectId, [FromRoute] Guid taskId, [FromBody] UpdateTaskRequestDto request)
         {
-            var task = _tasksService.Update(projectId, taskId, request, GetUserName());
+            var task = _tasksService.Update(projectId, taskId, request, this.GetUserName());
             return Ok(task);
         }
 
-        [HttpPut("DeleteTask")]
+        [HttpPut("projects/{projectId}/tasks/{taskId}/delete")]
         public ActionResult Delete([FromRoute] Guid projectId, [FromRoute] Guid taskId)
         {
-            _tasksService.Delete(projectId, taskId, GetUserName());
+            _tasksService.Delete(projectId, taskId, this.GetUserName());
             return Ok();
-        }
-
-        private string GetUserName()
-        {
-            var cognitoUsername = HttpContext.User.FindFirst("cognito:username")?.Value;
-            return cognitoUsername;
         }
     }
 }

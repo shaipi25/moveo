@@ -3,14 +3,16 @@ using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Repositories;
 using Requests;
+using Tasks;
 
 var builder = Host.CreateApplicationBuilder(args);
 
 builder.Services.AddScoped<ITasksRepository, TasksRepository>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-      options.UseSqlServer(builder.Configuration.GetConnectionString("DBConnection")));
+      options.UseNpgsql(builder.Configuration.GetConnectionString("DBConnection")));
 
+var rabbitSettings = builder.Configuration.GetSection("RabbitMQ").Get<RabbitMQSettings>();
 
 builder.Services.AddMassTransit(x =>
 {
@@ -19,14 +21,14 @@ builder.Services.AddMassTransit(x =>
     x.AddConsumer<UpdateTaskConsumer>();
     x.AddConsumer<DeleteTaskConsumer>();
 
+    x.AddRequestClient<GetProjectRequest>();
+
     x.UsingRabbitMq((context, cfg) =>
     {
-        x.AddRequestClient<GetProjectRequest>();
-
-        cfg.Host("localhost", "/", h =>
+        cfg.Host(rabbitSettings.HostName, rabbitSettings.VirtualHost, h =>
         {
-            h.Username("guest");
-            h.Password("guest");
+            h.Username(rabbitSettings.UserName);
+            h.Password(rabbitSettings.Password);
         });
 
         cfg.ConfigureEndpoints(context);
